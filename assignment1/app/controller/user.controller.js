@@ -41,7 +41,7 @@ else if(validator.schema.validate(req.body.password) == false){
     // Save user data in the database
     User.create(user, (err, data) => {
       if (err){
-        res.status(500).send({
+          return res.status(500).send({
             message:
               err.message || "Some error occurred while creating the User."
           });

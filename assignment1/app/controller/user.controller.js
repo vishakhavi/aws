@@ -112,7 +112,7 @@ exports.getUpdatedDetails = ((req, res, next) => {
                              if (error) {
                                  return res.status(400).json({ msg: "Update query execution failed" });
                              } else {
-                                 return res.status(200).json({ msg: "Data updated successfully" });
+                                 return res.status(204).json({  });
                              }
                         });
                    }

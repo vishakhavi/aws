@@ -38,9 +38,9 @@ else if(validator.schema.validate(req.body.password) == false){
       
     });
   
-    // Save user data in the database
+    // Save user data in the sql 
     User.create(user, (err, data) => {
-      if (err){
+     if (err){
           return res.status(500).send({
             message:
               err.message || "Some error occurred while creating the User."
@@ -49,7 +49,7 @@ else if(validator.schema.validate(req.body.password) == false){
             message: ` Email: ${req.body.username} already exists!`
           });
       }
-        else {
+     else {
             
             return res.status(201).json({
                  id: data.id,

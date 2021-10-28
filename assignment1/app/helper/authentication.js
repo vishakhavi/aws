@@ -18,10 +18,13 @@ function basicAuth(req, res, next) {
    
     sql.query('select * from user where username = (?)', [username], (err, data) => {
         if (data[0] != null) {
+            console.log(data);
             bcrypt.compare(password, data[0].password, (err, result) => {
                 if (result) {
+                    console.log(result);
                     const { password, ...userWithoutPassword } = data[0];
                     res.locals.user = userWithoutPassword;
+                    req.user = data[0];
                     next(); // authorized
                 } else {
                     

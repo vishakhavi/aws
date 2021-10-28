@@ -78,7 +78,7 @@ const deleteUserPic = function async (req, res) {
             return res.status(404).send("Not found")
         } else {
             // delete record from s3
-            const success = await deleteFile(newImage[0].url);
+            const success = await deleteFile(newImage[0].file_name);
             console.log("success");
             console.log(success);
             // delete record from database

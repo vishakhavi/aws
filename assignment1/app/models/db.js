@@ -3,10 +3,10 @@ const dbConfig = require("../config/db.config.js");
 
 // Create a connection to the database
 const connection = mysql.createConnection({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB
+  host: process.env.DB_HOSTNAME || "localhost",
+  user: process.env.DB_USERNAME || "root",
+  password: process.env.DB_PASSWORD || "Cloud!123",
+  database: process.env.DB_NAME || "webapp"
 });
 
 // open the MySQL connection

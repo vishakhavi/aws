@@ -15,9 +15,9 @@ const getUserPic = (req, res) => {
         }
     });
 };
-const uploadUserPic =  function (req, res) {
-    if (req.body.length == 0) {
-        return res.send("Error uploading file.");
+const uploadUserPic = async function (req, res) {
+    if (!req.body instanceof Buffer) {
+        return res.status(400).send("Invalid input type");
     }
 
     // check if current req.user.id present inn image db 
@@ -26,17 +26,17 @@ const uploadUserPic =  function (req, res) {
     // run delete logic
     //}
 
-    sql.query(`SELECT user_id FROM image where user_id ="${req.user.id}"`, (err, userid) => {
-        if (!userid.length) {
-            return res.status(404).send("Not found")
-        } else {
+    sql.query(`SELECT * FROM image where user_id ="${req.user.id}"`, async (err, imagedetails) => {
+        if (imagedetails.length > 0) {
+            
+            const success = await deleteFile(imagedetails[0].file_name);
             sql.query(`DELETE FROM image WHERE user_id = "${req.user.id}"`,async (delErr, delresults) => {
                 console.log(delErr)
                 if (delErr) {
                     return res.status(400).json({
                         msg: "Error while deleting the image"
                     });
-                } else {
+                }else{
                     const imageType = req.get('Content-Type').split('/')[1];
                     const result = await uploadFile(req.user, req.body, imageType);
                     console.log(result);
@@ -49,28 +49,49 @@ const uploadUserPic =  function (req, res) {
                     // return res.send({imagePath :`${result.Location}`});
                     console.log(newImage);
                     sql.query("INSERT INTO image SET ?", newImage, (err, results) => {
-
+                
                         if (err) {
                             console.log("insert query", err)
                             return res.status(400).json({
                                 msg: "Error while uploading image"
                             });
-
+                
                         } else {
                             return getUserPic(req, res);
                         }
                     })
                 }
             });
+        }else{
+            const imageType = req.get('Content-Type').split('/')[1];
+    const result = await uploadFile(req.user, req.body, imageType);
+    console.log(result);
+    const newImage = new Image({
+        user_id: req.user.id,
+        file_name: result.Key,
+        url: result.Location,
+        upload_date: new Date()
+    });
+    // return res.send({imagePath :`${result.Location}`});
+    console.log(newImage);
+    sql.query("INSERT INTO image SET ?", newImage, (err, results) => {
 
+        if (err) {
+            console.log("insert query", err)
+            return res.status(400).json({
+                msg: "Error while uploading image"
+            });
+
+        } else {
+            return getUserPic(req, res);
+        }
+    })
         }
     });
 
-
-
+    
 
 }
-
 
 const deleteUserPic = function async (req, res) {
     sql.query(`SELECT * FROM image where user_id ="${req.user.id}"`, async (err, newImage) => {
@@ -78,6 +99,7 @@ const deleteUserPic = function async (req, res) {
             return res.status(404).send("Not found")
         } else {
             // delete record from s3
+            console.log("filename"+newImage[0].file_name)
             const success = await deleteFile(newImage[0].file_name);
             console.log("success");
             console.log(success);

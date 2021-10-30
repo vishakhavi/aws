@@ -1,107 +1,96 @@
-const Image = require("../models/image.model.js");
+const imageService = require("../service/image.service");
 const {
     uploadFile,
     deleteFile
 } = require('./s3');
 const sql = require("../models/db.js");
-const getUserPic = (req, res) => {
-    sql.query(`SELECT * FROM image where user_id ="${req.user.id}"`, (err, newImage) => {
-        if (newImage.length == 0) {
-            return res.status(404).send("Not found")
-        } else {
+const getUserPic = async (req, res) => {
+    try {
+        let existingUser = await imageService.getImage(req.user.id);
+        if(existingUser != null){
             return res.status(200).send(
-                newImage[0]
+                existingUser
             );
+        }else{
+            res.status(400).json({
+                "message": "User doesn't have a profile image"
+            })
         }
-    });
-};
-const uploadUserPic =  function (req, res) {
+       
+    } catch (ex) {
+        if (ex.name == "SequelizeUniqueConstraintError") {
+            // user not found
+            res.status(404).json({
+                "message": "Not found"
+            })
+            res.status(500).json(ex)
+        }
+    }
+}
+
+const uploadUserPic = async function (req, res) {
     if (req.body.length == 0) {
         return res.send("Error uploading file.");
     }
-
-    // check if current req.user.id present inn image db 
-    // if true then call delete logic here if possible or just copy paste
-    //if(user present){
-    // run delete logic
-    //}
-
-    sql.query(`SELECT user_id FROM image where user_id ="${req.user.id}"`, (err, userid) => {
-        if (!userid.length) {
-            return res.status(404).send("Not found")
-        } else {
-            sql.query(`DELETE FROM image WHERE user_id = "${req.user.id}"`,async (delErr, delresults) => {
-                console.log(delErr)
-                if (delErr) {
-                    return res.status(400).json({
-                        msg: "Error while deleting the image"
-                    });
-                } else {
-                    const imageType = req.get('Content-Type').split('/')[1];
-                    const result = await uploadFile(req.user, req.body, imageType);
-                    console.log(result);
-                    const newImage = new Image({
-                        user_id: req.user.id,
-                        file_name: result.Key,
-                        url: result.Location,
-                        upload_date: new Date()
-                    });
-                    // return res.send({imagePath :`${result.Location}`});
-                    console.log(newImage);
-                    sql.query("INSERT INTO image SET ?", newImage, (err, results) => {
-
-                        if (err) {
-                            console.log("insert query", err)
-                            return res.status(400).json({
-                                msg: "Error while uploading image"
-                            });
-
-                        } else {
-                            return getUserPic(req, res);
-                        }
-                    })
-                }
-            });
-
+    try {
+        let existingUser = await imageService.getImage(req.user.id);
+        if (existingUser != null) {
+            const success = await deleteFile(existingUser.dataValues.file_name);
+            let removeUser = await imageService.deleteImage(existingUser.dataValues.user_id);
         }
-    });
-
-
+        const imageType = req.get('Content-Type').split('/')[1];
+        const result = await uploadFile(req.user, req.body, imageType);
+        console.log(result);
+        let uploadImage = await imageService.addImage(req.user.id, result);
+        // getUserPic(req, res);
+        res.send(uploadImage);
+    } catch (ex) {
+        if (ex.name == "SequelizeUniqueConstraintError") {
+            // user not found
+            res.status(404).json({
+                "message": "Not found"
+            })
+            res.status(400).json({
+                msg: "Error while uploading image"
+            });
+        }
+        console.log(ex);
+        res.status(500).json(ex);
+    }
 
 
 }
 
 
-const deleteUserPic = function async (req, res) {
-    sql.query(`SELECT * FROM image where user_id ="${req.user.id}"`, async (err, newImage) => {
-        if (newImage.length == 0) {
-            return res.status(404).send("Not found")
-        } else {
-            // delete record from s3
-            const success = await deleteFile(newImage[0].file_name);
+const deleteUserPic = async function (req, res) {
+    try {
+        let existingUser = await imageService.getImage(req.user.id);
+        if (existingUser != null) {
+            const success = await deleteFile(existingUser.dataValues.file_name);
             console.log("success");
             console.log(success);
             // delete record from database
-            console.log(`DELETE FROM image WHERE user_id = "${req.user.id}"`);
-            deleteImage(req, res)
-
+            if (success) {
+                let removeUser = await imageService.deleteImage(existingUser.dataValues.user_id);
+            }else{
+                res.status(400).send("Try again");
+            }
+        }else{
+            res.status(400).json({
+                "message": "User doesn't have a profile image"
+            })
         }
-    });
-
+        res.status(204).send();
+    } catch (ex) {
+        if (ex.name == "SequelizeUniqueConstraintError") {
+            // user not found
+            res.status(404).json({
+                "message": "Not found"
+            })
+        }
+    }
 }
 
-const deleteImage = function (req, res) {
-    sql.query(`DELETE FROM image WHERE user_id = "${req.user.id}"`, (delErr, delresults) => {
-        console.log(delErr)
-        if (delErr) {
-            return res.status(400).json({
-                msg: "Error while deleting the image"
-            });
-        } else {
-            return res.status(204).send();
-        }
-    });
-}
 module.exports = {
     getUserPic,
     deleteUserPic,

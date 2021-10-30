@@ -17,7 +17,9 @@ app.get("/", (req, res) => {
 });
 require("./app/routes/user.routes.js")(app);
 
-
+//database sync
+const db = require('./app/models/db');
+db.sequelize.sync();
 // app.use(function(req, res, next) {
 //   res.header('Access-Control-Allow-Origin', '*');
 //   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');

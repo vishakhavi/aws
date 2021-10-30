@@ -3,10 +3,10 @@ require('dotenv').config()
 const S3 = require('aws-sdk/clients/s3');
 var fs = require('fs');
 const {Duplex} = require('stream');
-const bucket_name=process.env.AWS_BUCKET_NAME
+const bucket_name=process.env.S3_NAME
 const region=process.env.AWS_BUCKET_REGION
-const accessKeyId=process.env.AWS_ACCESS_KEY
-const secretAccessKey=process.env.AWS_SECRET_KEY
+const accessKeyId=process.env.AWS_ACCESS_KEY_ID
+const secretAccessKey=process.env.AWS_SECRET_ACCESS_KEY
 
 
 var img_path = '/image1';
@@ -32,7 +32,7 @@ function uploadFile(user,file,imageType) {
     const fileStream = bufferToStream(file);
     
     const uploadParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket:bucket_name,
       Body: file,
       Key: `${user.id}/${filename}.${imageType}`
     }

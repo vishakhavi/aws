@@ -1,18 +1,23 @@
-const mysql = require("mysql");
+const Sequelize = require("sequelize");
 const dbConfig = require("../config/db.config.js");
+//initialize sequelize
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+  host: dbConfig.HOST,
+  dialect: 'mysql',
+  operatorsAliases: 0,
 
-// Create a connection to the database
-const connection = mysql.createConnection({
-  host: process.env.DB_HOSTNAME || "localhost",
-  user: process.env.DB_USERNAME || "root",
-  password: process.env.DB_PASSWORD || "Cloud!123",
-  database: process.env.DB_NAME || "webapp"
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  }
 });
 
-// open the MySQL connection
-connection.connect(error => {
-  if (error) throw error;
-  console.log("Successfully connected to the database.");
-});
+const db = {};
 
-module.exports = connection;
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+db.User = require("./user.model")(sequelize, Sequelize);
+db.Image = require("./image.model")(sequelize, Sequelize);
+module.exports = db;

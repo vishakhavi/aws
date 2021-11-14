@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/webapp
+hooks:
+  BeforeInstall:
+    - location: ./scripts/remove_old_app.sh
+      timeout: 800
+      runas: ubuntu
+  AfterInstall:
+    - location: ./scripts/install_dependencies.sh
+      timeout: 800
+      runas: ubuntu
+  ApplicationStart:
+    - location: scripts/app_start.sh
+      timeout: 300
+      runas: ubuntu

@@ -17,7 +17,7 @@ describe('Test API', () => {
     //Test Get route without basic auth
     describe("GET /user/self", () =>{
         it("check if unauthorized access works", (done) =>{
-            chai.request(server).get("/user/self")
+            chai.request(server).get("/v1/user/self")
             .end((err,res) =>{
                 res.should.have.status(401);
                 // res.body.should.be.a('array');

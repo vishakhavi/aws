@@ -1,0 +1,51 @@
+name: Upload to s3
+env:
+  ARTIFACT_NAME: csye6255-webapp-${{ github.sha }}.zip
+  CODEDEPLOY_APP_NAME: csye6255_webapp
+  CODEDEPLOY_APP_DEPLOY_GROUP_NAME: csye6225_webapp_deployment
+  AWS_REGION: us-east-1
+on:
+  push:
+    branches: [main]
+jobs:
+  ci_cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Use Node JS
+        uses: actions/setup-node@v1
+        with: 
+          node-version: '14.x'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Copy to S3  
+        run: |
+          pwd
+          ls -al
+          zip -r ${{ env.ARTIFACT_NAME }} .
+          aws s3 cp ${{ env.ARTIFACT_NAME }} s3://${{secrets.S3_BUCKET}}
+
+      - name: AWS Create Deployment
+        run: |
+          output=$(aws deploy create-deployment \
+           --application-name ${{ env.CODEDEPLOY_APP_NAME }} \
+           --deployment-config-name CodeDeployDefault.OneAtATime \
+           --deployment-group-name ${{ env.CODEDEPLOY_APP_DEPLOY_GROUP_NAME }} \
+           --description "CSYE6255Fall2021 - CodeDeploy"\
+           --s3-location bucket=${{ secrets.S3_BUCKET }},key=${{ env.ARTIFACT_NAME }},bundleType=zip \
+           --region ${{ env.AWS_REGION }}\
+           --output json)
+
+            echo $output
+            dId=$(echo $output | jq -r '.deploymentId')
+          
+            aws deploy wait deployment-successful --deployment-id $dId

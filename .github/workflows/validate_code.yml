@@ -1,0 +1,22 @@
+name: WebApp Unit Test
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  unit_test:
+  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Use Node JS
+        uses: actions/setup-node@v1
+        with: 
+          node-version: '14.x'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: run unit test
+        run: npm test

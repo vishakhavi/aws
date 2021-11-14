@@ -9,18 +9,18 @@ module.exports = app => {
     const users = require("../controller/user.controller.js");
     const image = require("../controller/imageupload.js");
     // Create a new Customer
-    app.post("/user", users.create);
+    app.post("/v1/user", users.create);
   
-    app.post("/user/self/pic",checkAuthorization,upload.single('image'),image.uploadUserPic);
+    app.post("/v1/user/self/pic",checkAuthorization,upload.single('image'),image.uploadUserPic);
 
-    app.get("/user/self/pic",checkAuthorization,image.getUserPic);
+    app.get("/v1/user/self/pic",checkAuthorization,image.getUserPic);
 
-    app.delete("/user/self/pic",checkAuthorization,image.deleteUserPic);
+    app.delete("/v1/user/self/pic",checkAuthorization,image.deleteUserPic);
    
-    app.get("/user/self",checkAuthorization,users.getUserDetails);
+    app.get("/v1/user/self",checkAuthorization,users.getUserDetails);
 
     
     // Update a user
 
-    app.put("/user/self", checkAuthorization, users.getUpdatedDetails);
+    app.put("/v1/user/self", checkAuthorization, users.getUpdatedDetails);
 }

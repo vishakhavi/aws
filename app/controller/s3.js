@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const S3 = require('aws-sdk/clients/s3');
+const AWS = require('aws-sdk');
 var fs = require('fs');
 const {Duplex} = require('stream');
 const bucket_name=process.env.S3_NAME
@@ -8,15 +8,12 @@ const region=process.env.AWS_BUCKET_REGION
 const accessKeyId=process.env.AWS_ACCESS_KEY_ID
 const secretAccessKey=process.env.AWS_SECRET_ACCESS_KEY
 
-
+const loggerService = require("../service/logger.service");
+let s3Timer = process.hrtime();
 var img_path = '/image1';
 var filename = 'profile_pic';
 
-const s3 = new S3({
-    region,
-    accessKeyId,
-    secretAccessKey
-});
+const s3 = new AWS.S3();
 
 // uploads a file to s3
 function uploadFile(user,file,imageType) {
@@ -56,5 +53,6 @@ async function deleteFile(imagePath){
 }
 module.exports ={
     uploadFile : uploadFile,
-    deleteFile : deleteFile
+    deleteFile : deleteFile,
+    s3Timer: s3Timer
 }

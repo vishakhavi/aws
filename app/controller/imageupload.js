@@ -1,12 +1,22 @@
 const imageService = require("../service/image.service");
 const {
     uploadFile,
-    deleteFile
+    deleteFile,
+    s3Timer
 } = require('./s3');
 const sql = require("../models/db.js");
+const {
+    parseHrtimeToSeconds
+} = require("../service/timer.service");
+const metricsService = require("../service/statsd.service");
+const loggerService = require("../service/logger.service");
 const getUserPic = async (req, res) => {
     try {
         let existingUser = await imageService.getImage(req.user.id);
+        metricsService.counter("GET.user.pic");
+        let timerStart = process.hrtime();
+        let timeElapsed = (parseHrtimeToSeconds(process.hrtime(s3Timer)) * 1000);
+        metricsService.timer("Timer.S3.GET.pic", timeElapsed);
         if(existingUser != null){
             return res.status(200).send(
                 existingUser
@@ -64,11 +74,16 @@ const uploadUserPic = async function (req, res) {
 
 const deleteUserPic = async function (req, res) {
     try {
+        metricsService.counter("DELETE.user.pic");
+        let timerStart = process.hrtime();
+        let timeElapsed = (parseHrtimeToSeconds(process.hrtime(s3Timer)) * 1000);
+        metricsService.timer("Timer.S3.DELETE.user.pic", timeElapsed);
         let existingUser = await imageService.getImage(req.user.id);
         if (existingUser != null) {
             const success = await deleteFile(existingUser.dataValues.file_name);
-            console.log("success");
-            console.log(success);
+            timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
+            metricsService.timer("Timer.API.DELETE.user.pic", timeElapsed);
+            loggerService.info("User pic deleted");
             // delete record from database
             if (success) {
                 let removeUser = await imageService.deleteImage(existingUser.dataValues.user_id);
@@ -88,6 +103,10 @@ const deleteUserPic = async function (req, res) {
                 "message": "Not found"
             })
         }
+        timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
+        metricsService.timer("Timer.API.DELETE.user.pic", timeElapsed);
+        loggerService.error("Exception while deleting pic", ex);
+        res.status(500).json(ex);
     }
 }
 

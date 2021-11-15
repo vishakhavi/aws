@@ -17,6 +17,8 @@ const loggerService = require("../service/logger.service");
 
 exports.create = async (req, res) => {
      // Validate request
+     metricsService.counter("POST.users");
+     let timerStart = process.hrtime();
      let createUser = Object.assign({}, req.body);
      if (!req.body) {
           res.status(400).send({
@@ -36,7 +38,6 @@ exports.create = async (req, res) => {
           //valid request body
           try {
                let newUser = await userService.create(req.body);
-               let timerStart = process.hrtime();
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                metricsService.timer("Timer.API.POST.users", timeElapsed);
                loggerService.info("User created");
@@ -59,10 +60,13 @@ exports.create = async (req, res) => {
 // get all user data from the database.
 
 exports.getUserDetails = (req, res) => {
+     
      if (res.locals.user) {
           res.statusCode = 200;
           res.locals.user.account_created = res.locals.user.account_created;
           res.locals.user.account_updated = res.locals.user.account_updated;
+          metricsService.counter("GET.users.id");
+          let timerStart = process.hrtime();
           const {
                password,
                ...rest
@@ -77,7 +81,8 @@ exports.getUserDetails = (req, res) => {
 
 // Update user details
 exports.getUpdatedDetails = (async(req, res, next) => {
-
+     metricsService.counter("PUT.users.id");
+     let timerStart = process.hrtime();
      if (res.locals.user) {
           if (Object.keys(req.body).length > 0) {
                let contentType = req.headers['content-type'];
@@ -112,7 +117,6 @@ exports.getUpdatedDetails = (async(req, res, next) => {
                          // });
                          try {
                               let updatedUser = await userService.update(req.body, req.user.id);
-                              let timerStart = process.hrtime();
                               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                               metricsService.timer("Timer.API.GET.users.id", timeElapsed);
                               loggerService.info("User update successful", ex);

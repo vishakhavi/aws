@@ -9,6 +9,9 @@ const {
      v4: uuid4
 } = require('uuid')
 const sql = require("../models/db.js");
+const {parseHrtimeToSeconds} = require("../service/timer.service");
+const metricsService = require("../service/statsd.service");
+const loggerService = require("../service/logger.service");
 
 // Create and Save a new Customer
 
@@ -33,15 +36,20 @@ exports.create = async (req, res) => {
           //valid request body
           try {
                let newUser = await userService.create(req.body);
+               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
+               metricsService.timer("Timer.API.POST.users", timeElapsed);
+               loggerService.info("User created");
                res.status(201).json(newUser);
           } catch (ex) {
+               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
+               metricsService.timer("Timer.API.POST.users", timeElapsed);
                if (ex.name == "SequelizeUniqueConstraintError") {
-                    // email exists
+                //user with same email exists
                     res.status(400).json({
-                         "message": "Username already exists."
+                    "message": "Username already exists."
                     })
                }
-               console.log(ex);
+               loggerService.error("Exception at user.controller.js create user", ex);
                res.status(500).json(ex);
           }
      }
@@ -57,7 +65,10 @@ exports.getUserDetails = (req, res) => {
           const {
                password,
                ...rest
-           } = res.locals.user.dataValues;
+          } = res.locals.user.dataValues;
+          let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
+          metricsService.timer("Timer.API.GET.users.username", timeElapsed);
+          loggerService("User found & returned");
           res.setHeader('Content-Type', 'application/json');
           res.json(rest);
      }
@@ -82,6 +93,7 @@ exports.getUpdatedDetails = (async(req, res, next) => {
                               return res.status(400).json({
                                    msg: 'Password must be: atleast 8 letters & should contain an uppercase, a lowercase, a digit & a symbol! No spaces allowed'
                               });
+                              
                          }
                     } else {
                          return res.status(400).json({
@@ -99,9 +111,14 @@ exports.getUpdatedDetails = (async(req, res, next) => {
                          // });
                          try {
                               let updatedUser = await userService.update(req.body, req.user.id);
+                              let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
+                              metricsService.timer("Timer.API.GET.users.id", timeElapsed);
+                              loggerService.info("User update successful", ex);
                               res.status(204).send();
                          } catch (ex) {
-                              console.log(ex)
+                              let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
+                              metricsService.timer("Timer.API.GET.users.id", timeElapsed);
+                              loggerService.error("Exception at user.controller.js update user", ex);
                               res.status(500).json(ex);
                          }
                     }

@@ -36,6 +36,7 @@ exports.create = async (req, res) => {
           //valid request body
           try {
                let newUser = await userService.create(req.body);
+               let timerStart = process.hrtime();
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                metricsService.timer("Timer.API.POST.users", timeElapsed);
                loggerService.info("User created");
@@ -111,6 +112,7 @@ exports.getUpdatedDetails = (async(req, res, next) => {
                          // });
                          try {
                               let updatedUser = await userService.update(req.body, req.user.id);
+                              let timerStart = process.hrtime();
                               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                               metricsService.timer("Timer.API.GET.users.id", timeElapsed);
                               loggerService.info("User update successful", ex);

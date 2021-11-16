@@ -73,7 +73,7 @@ exports.getUserDetails = (req, res) => {
           } = res.locals.user.dataValues;
           let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
           metricsService.timer("Timer.API.GET.users.username", timeElapsed);
-          loggerService("User found & returned");
+          loggerService.info("User found & returned");
           res.setHeader('Content-Type', 'application/json');
           res.json(rest);
      }

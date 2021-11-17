@@ -12,9 +12,9 @@ const metricsService = require("../service/statsd.service");
 const loggerService = require("../service/logger.service");
 const getUserPic = async (req, res) => {
     try {
-        let existingUser = await imageService.getImage(req.user.id);
         metricsService.counter("GET.user.pic");
         let timerStart = process.hrtime();
+        let existingUser = await imageService.getImage(req.user.id);
         let timeElapsed = (parseHrtimeToSeconds(process.hrtime(s3Timer)) * 1000);
         metricsService.timer("Timer.S3.GET.pic", timeElapsed);
         if(existingUser != null){
@@ -43,6 +43,8 @@ const uploadUserPic = async function (req, res) {
         return res.send("Error uploading file.");
     }
     try {
+        metricsService.counter("POST.user.pic");
+        let timerStart = process.hrtime();
         let existingUser = await imageService.getImage(req.user.id);
         if (existingUser != null) {
             const success = await deleteFile(existingUser.dataValues.file_name);
@@ -52,6 +54,8 @@ const uploadUserPic = async function (req, res) {
         const result = await uploadFile(req.user, req.body, imageType);
         console.log(result);
         let uploadImage = await imageService.addImage(req.user.id, result);
+        let timeElapsed = (parseHrtimeToSeconds(process.hrtime(s3Timer)) * 1000);
+        metricsService.timer("Timer.S3.POST.pic", timeElapsed);
         // getUserPic(req, res);
         res.send(uploadImage);
     } catch (ex) {

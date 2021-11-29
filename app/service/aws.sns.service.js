@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const loggerService = require("../services/logger.service");
+const loggerService = require("../service/logger.service");
 
 AWS.config.update({region: process.env.REGION});
 const getSNSParam = (message) => {

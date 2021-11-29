@@ -4,8 +4,9 @@ const dbConfig = require("../config/db.config.js");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: 'mysql',
+  alter :true,
+  force: false,
   operatorsAliases: 0,
-
   pool: {
     max: 5,
     min: 0,

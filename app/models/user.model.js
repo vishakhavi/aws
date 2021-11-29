@@ -26,6 +26,13 @@ module.exports = (sequelize, Sequelize) => {
     account_updated: {
       type: 'TIMESTAMP',
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    verified: {
+      type: Sequelize.BOOLEAN, defaultValue: false
+    }, 
+    verified_on: {
+      type: 'TIMESTAMP',
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
       timestamps: false

@@ -1,7 +1,9 @@
 const User = require("../models/user.model.js");
 const userService = require("../service/user.service");
 const emailValidator = require('email-validator');
+//const createDynamoDB = require('./dynamodb');
 const validator = require('../helper/validator.js');
+const snsService = require("../service/aws.sns.service");
 const moment = require('moment');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -37,10 +39,13 @@ exports.create = async (req, res) => {
      } else {
           //valid request body
           try {
+               //let verifyUser = await createDynamoDB.handler(req.body);
+              // console.log(verifyUser.message)
                let newUser = await userService.create(req.body);
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                metricsService.timer("Timer.API.POST.users", timeElapsed);
                loggerService.info("User created");
+               snsService.sendMessage(`${process.env.SENDER},${req.user.username},verified`);
                res.status(201).json(newUser);
           } catch (ex) {
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
@@ -119,7 +124,7 @@ exports.getUpdatedDetails = (async(req, res, next) => {
                               let updatedUser = await userService.update(req.body, req.user.id);
                               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                               metricsService.timer("Timer.API.GET.users.id", timeElapsed);
-                              loggerService.info("User update successful", ex);
+                              loggerService.info("User update successful");
                               res.status(204).send();
                          } catch (ex) {
                               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);

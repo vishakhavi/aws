@@ -17,6 +17,8 @@ const create = async (userObj) => {
     user.last_name = userObj.last_name;
     user.account_created = new Date();
     user.account_updated = new Date();
+    user.verified = true;
+    user.verified_on = new Date();
     let newUser = await User.create(user);
     //return user without password
     const {

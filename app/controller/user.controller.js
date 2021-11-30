@@ -45,7 +45,7 @@ exports.create = async (req, res) => {
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                metricsService.timer("Timer.API.POST.users", timeElapsed);
                loggerService.info("User created");
-               snsService.sendMessage(`${process.env.SENDER},${req.user.username},verified`);
+               snsService.sendMessage(`${process.env.SENDER},${req.body.username},verified`);
                res.status(201).json(newUser);
           } catch (ex) {
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);

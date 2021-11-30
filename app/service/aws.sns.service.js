@@ -4,7 +4,8 @@ const loggerService = require("../service/logger.service");
 AWS.config.update({region: process.env.REGION});
 const getSNSParam = (message) => {
     return {
-        Message: message,
+        Subject: "verify user",
+        Message: `{"username":"${message}"}`,
         TopicArn: process.env.SNS_ARN
     }
 }

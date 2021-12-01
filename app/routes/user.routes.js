@@ -10,6 +10,8 @@ module.exports = app => {
     const image = require("../controller/imageupload.js");
     // Create a new Customer
     app.post("/v1/user", users.create);
+
+    app.get('/v1/verifyUserEmail', users.verifyUser);
   
     app.post("/v1/user/self/pic",checkAuthorization,upload.single('image'),image.uploadUserPic);
 

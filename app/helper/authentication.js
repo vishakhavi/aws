@@ -48,10 +48,15 @@ async function basicAuth(req, res, next) {
                             return res.status(401).json({ msg: 'Unauthorized' });
                         } else {
                             console.log(result);
-                            const { password, ...userWithoutPassword } = user;
+                            if(user.verified){
+                                const { password, ...userWithoutPassword } = user;
                             res.locals.user = userWithoutPassword;
                             req.user = user;
                             next(); // authorized
+                            }else{
+                                return res.status(401).json({ msg: 'User email is not verified' });
+                            }
+                            
                         }
                     });
     }

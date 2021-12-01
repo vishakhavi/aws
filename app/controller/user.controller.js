@@ -17,7 +17,6 @@ const sql = require("../models/db.js");
 const {parseHrtimeToSeconds} = require("../service/timer.service");
 const metricsService = require("../service/statsd.service");
 const loggerService = require("../service/logger.service");
-const { propfind } = require("superagent");
 
 // Create and Save a new Customer
 
@@ -90,7 +89,6 @@ exports.verifyUser = async (req,res) => {
                ExpressionAttributeValues: {
                  ':u': email,
                },
-               ProjectionExpression: 'username, token,ttl',
                FilterExpression: 'username = :u',
                TableName: 'Verify_Email_table'
              };
@@ -114,14 +112,14 @@ exports.verifyUser = async (req,res) => {
                     loggerService.info("query email"+req.query.email +" query token  "+req.query.token);
                     if(ttl < currentTime){
                         loggerService.info("token has expired");
-                        return res.html("Token has expired!");
+                        return res.send("Token has expired!");
                     }else{
                         if(email == req.query.email && token == req.query.token){
                          loggerService.info("email and token matches");
-                             return res.html("Email "+req.query.email+" is been Successfully verified");
+                             return res.send("Email "+req.query.email+" is been Successfully verified");
                          }else{
                               loggerService.info("email and token doesnt match"+err);
-                             return res.html("Email "+req.query.email+" or token is invalid");
+                             return res.send("Email "+req.query.email+" or token is invalid");
                          }
                     }
 

@@ -96,7 +96,7 @@ exports.verifyUser = async (req, res) => {
                     TableName: 'Verify_Email_table'
                };
                loggerService.info("params==>" + params);
-               ddb.get(params, function (error, record) {
+               ddb.get(params, async (error, record) =>{
                     if (error) {
                          logger.info({
                               msg: "Error in DynamoDB get method ",
@@ -133,7 +133,7 @@ exports.verifyUser = async (req, res) => {
                          }
                          if (isTokenValid) {
                               try{
-                              let updatedUser = await userService.update(true, req.user.id);
+                              let verifiedUser = await userService.updateVerifiedUser(true, req.user.id);
                               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                               metricsService.timer("Timer.API.GET.users.id", timeElapsed);
                               loggerService.info("User update successful");

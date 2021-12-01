@@ -136,7 +136,7 @@ exports.verifyUser = async (req, res) => {
                          }
                          if (isTokenValid) {
                               try{
-                              let verifiedUser = await userService.updateVerifiedUser(true, req.user.id);
+                              let verifiedUser = await userService.updateVerifiedUser(true, req.query.email);
                               loggerService.info("User update successful");
                               res.status(204).send();
                          } catch (ex) {

@@ -137,13 +137,9 @@ exports.verifyUser = async (req, res) => {
                          if (isTokenValid) {
                               try{
                               let verifiedUser = await userService.updateVerifiedUser(true, req.user.id);
-                              let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
-                              metricsService.timer("Timer.API.GET.users.id", timeElapsed);
                               loggerService.info("User update successful");
                               res.status(204).send();
                          } catch (ex) {
-                              let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
-                              metricsService.timer("Timer.API.GET.users.id", timeElapsed);
                               loggerService.error("Exception at user.controller.js update user", ex);
                               res.status(500).json(ex);
                          }

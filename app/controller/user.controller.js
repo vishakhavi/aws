@@ -96,7 +96,7 @@ exports.verifyUser = async (req, res) => {
                     TableName: 'Verify_Email_table'
                   };
                loggerService.info("params==>" + params);
-               ddb.get(params, async (error, record) =>{
+               ddb.scan(params, async (error, record) =>{
                     if (error) {
                          loggerService.info({
                               msg: "Error in DynamoDB get method ",
@@ -110,14 +110,14 @@ exports.verifyUser = async (req, res) => {
                     } else {
                          let isTokenValid = false;
                          console.log("Checking if record already present in DB!!");
-                         if (record.Item == null || record.Item == undefined) {
+                         if (record.Items[0] == null || record.Items[0] == undefined) {
                               loggerService.info({
                                    msg: "No record in Dynamo ",
                                    record: record
                               });
                               isTokenValid = false;
                          } else {
-                              if (record.Item.ttl < Math.floor(Date.now() / 1000)) {
+                              if (record.Items[0].ttl < Math.floor(Date.now() / 1000)) {
                                    loggerService.info({
                                         msg: "ttl expired ",
                                         record: record

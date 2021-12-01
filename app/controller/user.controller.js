@@ -133,7 +133,7 @@ exports.verifyUser = async (req, res) => {
                          }
                          if (isTokenValid) {
                               try{
-                              let updatedUser = await userService.update(true, req.user.id);
+                              let verifiedUser = await userService.update(true, req.user.id);
                               let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                               metricsService.timer("Timer.API.GET.users.id", timeElapsed);
                               loggerService.info("User update successful");

@@ -69,6 +69,7 @@ exports.create = async (req, res) => {
 // get all user data from the database.
 exports.verifyUser = async (req,res) => {
      loggerService.info(req.protocol+"://"+req.get('host'));
+     loggerService.info('query'+req.query.email);
      if((req.protocol+"://"+req.get('host'))==("http://prod.vishakhavinayak.me"))
      {
           loggerService.info("Domain is matched. Information is from Authentic email");
@@ -84,14 +85,21 @@ exports.verifyUser = async (req,res) => {
           //    }).promise()
           
                var params = {
-                    TableName: "Verify_Email_table"
+                    TableName: "Verify_Email_table",
+                    FilterExpression: '#username = :username',
+                    ExpressionAttributeNames: {
+                        '#username': 'username',
+                    },
+                    ExpressionAttributeValues: {
+                        ':username': req.query.email,
+                    },
                   };
-                   var result = await ddb.scan(params).promise()
+          var result = await ddb.scan(params).promise()
 
         
-           console.log("result==>"+JSON.stringify(result))
+          loggerService.info("result==>"+JSON.stringify(result))
         
-          
+           loggerService.info("email from dynamodb"+ result.Items[0].username);
            let email = result.Items[0].username;
            let token = result.Items[0].token;
            let ttl = result.Items[0].ttl;

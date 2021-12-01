@@ -68,7 +68,7 @@ exports.create = async (req, res) => {
 
 // get all user data from the database.
 exports.verifyUser = async (req,res) => {
-     loggerService.info(req.protocol+":/"+req.get('host'));
+     loggerService.info(req.protocol+"://"+req.get('host'));
      if((req.protocol+"://"+req.get('host'))==("http://prod.vishakhavinayak.me"))
      {
           loggerService.info("Domain is matched. Information is from Authentic email");
@@ -84,8 +84,11 @@ exports.verifyUser = async (req,res) => {
           
            let email = result.Items[0].username;
            let token = result.Items[0].token;
-           if(email == req.query.email && token == req.query.token)
-             res.end("<h1>Email "+req.query.email+" is been Successfully verified");
+           loggerService.info("dynamodb"+email +"   "+token);
+           loggerService.info("query"+req.query.email +"   "+req.query.token);
+           if(email == req.query.email && token == req.query.token){
+               res.end("<h1>Email "+req.query.email+" is been Successfully verified");
+           }
          }
          else
          {

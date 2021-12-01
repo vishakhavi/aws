@@ -92,6 +92,9 @@ exports.verifyUser = async (req, res) => {
                     Key: {
                          "username": req.query.email
                      },
+                     ExpressionAttributeValues: {
+                         ':u': req.query.email,
+                       },
                     FilterExpression: 'username = :u',
                     TableName: 'Verify_Email_table'
                   };

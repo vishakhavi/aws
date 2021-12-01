@@ -87,7 +87,7 @@ exports.verifyUser = async (req,res) => {
           
           var params = {
                ExpressionAttributeValues: {
-                 ':u': email,
+                 ':u': req.query.email,
                },
                FilterExpression: 'username = :u',
                TableName: 'Verify_Email_table'

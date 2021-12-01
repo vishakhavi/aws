@@ -58,7 +58,7 @@ const update = async (userObj, userId) => {
     });
     return updatedUser;
 }
-const update = async (status, userId) => {
+const updateVerifiedUser = async (status, userId) => {
     let user = {};
     user.verified = status;
     user.verified_on = new Date();
@@ -75,5 +75,6 @@ const update = async (status, userId) => {
 module.exports = {
     create,
     get,
-    update
+    update,
+    updateVerifiedUser
 }

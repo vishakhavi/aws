@@ -84,20 +84,27 @@ exports.verifyUser = async (req,res) => {
           //      }
           //    }).promise()
           
-               var params = {
+          var params = {
                     TableName: "Verify_Email_table",
                     FilterExpression: '#username = :username',
                     ExpressionAttributeNames: {
-                        '#username': 'username',
+                        '#username': 'username'
                     },
                     ExpressionAttributeValues: {
-                        ':username': req.query.email,
+                        ':username': req.query.email
                     },
                   };
-          var result = await ddb.scan(params).promise()
+          loggerService.info("params==>"+params);
+         /*  ddb.get(params,function(err,data){
+               if(err){
+                    loggerService.info("dynamo db error");
+                    res.end("<h1>Token has expired!</h>");
+               }
+          }) */
+          var result = await ddb.scan(params).promise();
 
         
-          loggerService.info("result==>"+JSON.stringify(result))
+          loggerService.info("result==>"+JSON.stringify(result));
         
            loggerService.info("email from dynamodb"+ result.Items[0].username);
            let email = result.Items[0].username;
@@ -108,12 +115,12 @@ exports.verifyUser = async (req,res) => {
            loggerService.info("query email"+req.query.email +" query token  "+req.query.token);
            if(ttl < currentTime){
                loggerService.info("token has expired");
-               res.end("<h1>Token has expired!</h>");
+               res.send("<h1>Token has expired!</h>");
            }else{
                if(email == req.query.email && token == req.query.token){
-                    res.end("<h1>Email "+req.query.email+" is been Successfully verified</h1>");
+                    res.send("<h1>Email "+req.query.email+" is been Successfully verified</h1>");
                 }else{
-                    res.end("<h1>Email "+req.query.email+" or token is invalid/h1>");
+                    res.send("<h1>Email "+req.query.email+" or token is invalid/h1>");
                 }
            }
            
@@ -121,12 +128,12 @@ exports.verifyUser = async (req,res) => {
          else
          {
              loggerService.info("email is not verified");
-             res.end("<h1>Bad Request</h1>");
+             res.send("<h1>Bad Request</h1>");
          }
      }
      else
      {
-         res.end("<h1>Request is from unknown source");
+         res.send("<h1>Request is from unknown source");
      }
 }
 

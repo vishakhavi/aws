@@ -89,11 +89,6 @@ exports.verifyUser = async (req, res) => {
                //    }).promise()
 
                var params = {
-                    ExpressionAttributeValues: {
-                      ':u': req.query.email,
-                      ':t': req.query.token,
-                      ':ttl': 'ttl'
-                    },
                     Key: {
                          "username": req.query.email
                      },

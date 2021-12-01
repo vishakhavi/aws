@@ -77,12 +77,12 @@ exports.verifyUser = async (req,res) => {
              loggerService.info("email is verified");
           var result = await ddb.query({
                TableName: 'Verify_Email_table',
-               FilterExpression: 'TTL >= :currentEpoch',
+               FilterExpression: 'TimeToExist >= :currentEpoch',
                ExpressionAttributeValues: {
                  ':currentEpoch': Date.now() / 1000
                }
              }).promise()
-           console.log(JSON.stringify(result))
+           console.log("result==>"+JSON.stringify(result))
         
           
            let email = result.Items[0].username;

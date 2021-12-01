@@ -94,13 +94,12 @@ exports.verifyUser = async (req,res) => {
              };
           loggerService.info("params==>"+params);
           var result = await ddb.scan(params).promise();
-          res.setHeader('Content-Type', 'application/json');
           loggerService.info("result==>"+JSON.stringify(result));
           
           loggerService.info("email from dynamodb"+ result.Items[0].username);
           let email = result.Items[0].username;
           let token = result.Items[0].token;
-          let ttl = result.Items[0].ttl;
+          let ttl = result.Items[0].ttl.N;
           let currentTime = Date.now()/1000;
           loggerService.info("dynamodb"+email +"   "+token);
           loggerService.info("query email"+req.query.email +" query token  "+req.query.token);

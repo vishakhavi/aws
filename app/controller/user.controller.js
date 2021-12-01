@@ -94,6 +94,9 @@ exports.verifyUser = async (req, res) => {
                       ':t': req.query.token,
                       ':ttl': 'ttl'
                     },
+                    Key: {
+                         "username": req.query.email
+                     },
                     FilterExpression: 'username = :u',
                     TableName: 'Verify_Email_table'
                   };

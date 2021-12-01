@@ -95,46 +95,44 @@ exports.verifyUser = async (req,res) => {
                     },
                   };
           loggerService.info("params==>"+params);
-         /*  ddb.get(params,function(err,data){
+           ddb.get(params,function(err,data){
                if(err){
-                    loggerService.info("dynamo db error");
-                    res.end("<h1>Token has expired!</h>");
-               }
-          }) */
-          var result = await ddb.scan(params).promise();
-
+                    loggerService.info("dynamo db error"+err);
+                    return res.status(500).send(err);
+               }else{
+                    loggerService.info("result==>"+JSON.stringify(result));
         
-          loggerService.info("result==>"+JSON.stringify(result));
-        
-           loggerService.info("email from dynamodb"+ result.Items[0].username);
-           let email = result.Items[0].username;
-           let token = result.Items[0].token;
-           let ttl = result.Items[0].ttl;
-           let currentTime = Date.now()/1000;
-           loggerService.info("dynamodb"+email +"   "+token);
-           loggerService.info("query email"+req.query.email +" query token  "+req.query.token);
-           if(ttl < currentTime){
-               loggerService.info("token has expired");
-               res.send("<h1>Token has expired!</h>");
-           }else{
-               if(email == req.query.email && token == req.query.token){
-                    res.send("<h1>Email "+req.query.email+" is been Successfully verified</h1>");
-                }else{
-                    res.send("<h1>Email "+req.query.email+" or token is invalid/h1>");
-                }
-           }
-           
-         }
-         else
-         {
-             loggerService.info("email is not verified");
-             res.send("<h1>Bad Request</h1>");
-         }
-     }
-     else
-     {
-         res.send("<h1>Request is from unknown source");
-     }
+                    loggerService.info("email from dynamodb"+ result.Items[0].username);
+                    let email = result.Items[0].username;
+                    let token = result.Items[0].token;
+                    let ttl = result.Items[0].ttl;
+                    let currentTime = Date.now()/1000;
+                    loggerService.info("dynamodb"+email +"   "+token);
+                    loggerService.info("query email"+req.query.email +" query token  "+req.query.token);
+                    if(ttl < currentTime){
+                        loggerService.info("token has expired");
+                        res.send("<h1>Token has expired!</h>");
+                    }else{
+                        if(email == req.query.email && token == req.query.token){
+                             res.send("<h1>Email "+req.query.email+" is been Successfully verified</h1>");
+                         }else{
+                             res.send("<h1>Email "+req.query.email+" or token is invalid/h1>");
+                         }
+                    }
+                    
+                  }
+                
+          })  
+      } else
+          {
+              loggerService.info("email is not verified");
+              res.send("<h1>Bad Request</h1>");
+          }
+      }
+      else
+      {
+          res.send("<h1>Request is from unknown source");
+      }
 }
 
 exports.getUserDetails = (req, res) => {

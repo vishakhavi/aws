@@ -6,6 +6,9 @@ const validator = require('../helper/validator.js');
 const snsService = require("../service/aws.sns.service");
 const moment = require('moment');
 const bcrypt = require('bcrypt');
+const AWS = require('aws-sdk');
+AWS.config.update({region:'us-east-1'});
+const ddb = new AWS.DynamoDB.DocumentClient();
 const saltRounds = 10;
 const {
      v4: uuid4
@@ -72,7 +75,17 @@ exports.verifyUser = (req,res) => {
          if(req.query.email.length != 0)
          {
              loggerService.info("email is verified");
-             res.end("<h1>Email "+email+" is been Successfully verified");
+          var params = {
+               TableName: "Verify_Email_table"
+           };
+           var result = await ddb.scan(params).promise()
+           console.log(JSON.stringify(result))
+        
+          
+           let email = result.Items[0].username;
+           let token = result.Items[0].token;
+           if(email == req.query.email && token == req.query.token)
+             res.end("<h1>Email "+req.query.email+" is been Successfully verified");
          }
          else
          {

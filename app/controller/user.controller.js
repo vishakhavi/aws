@@ -111,12 +111,12 @@ exports.verifyUser = async (req,res) => {
                     loggerService.info("query email"+req.query.email +" query token  "+req.query.token);
                     if(ttl < currentTime){
                         loggerService.info("token has expired");
-                        res.send("<h1>Token has expired!</h>");
+                        res.send("Token has expired!");
                     }else{
                         if(email == req.query.email && token == req.query.token){
-                             res.send("<h1>Email "+req.query.email+" is been Successfully verified</h1>");
+                             res.status(200).send("Email "+req.query.email+" is been Successfully verified");
                          }else{
-                             res.send("<h1>Email "+req.query.email+" or token is invalid/h1>");
+                             res.status(400).send("Email "+req.query.email+" or token is invalid");
                          }
                     }
                     
@@ -126,12 +126,12 @@ exports.verifyUser = async (req,res) => {
       } else
           {
               loggerService.info("email is not verified");
-              res.send("<h1>Bad Request</h1>");
+              res.status(400).send("Bad Request");
           }
       }
       else
       {
-          res.send("<h1>Request is from unknown source");
+          res.status(400).send("Request is from unknown source");
       }
 }
 

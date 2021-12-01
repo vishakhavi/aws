@@ -120,7 +120,7 @@ exports.verifyUser = async (req, res) => {
                               });
                               isTokenValid = false;
                          } else {
-                              if (record.Items[0].ttl < Math.floor(Date.now() / 1000)) {
+                              if (record.Items[0].ttl.N < Math.floor(Date.now() / 1000)) {
                                    loggerService.info({
                                         msg: "ttl expired ",
                                         record: record

@@ -75,17 +75,20 @@ exports.verifyUser = async (req,res) => {
          if(req.query.email.length != 0)
          {
              loggerService.info("email is verified");
-          var params = {
-               TableName: "Verify_Email_table"
-           };
-           var result = await ddb.scan(params).promise()
+          var result = await ddb.query({
+               TableName: 'Verify_Email_table',
+               FilterExpression: 'TTL >= :currentEpoch',
+               ExpressionAttributeValues: {
+                 ':currentEpoch': Date.now() / 1000
+               }
+             }).promise()
            console.log(JSON.stringify(result))
         
           
            let email = result.Items[0].username;
            let token = result.Items[0].token;
            loggerService.info("dynamodb"+email +"   "+token);
-           loggerService.info("query"+req.query.email +"   "+req.query.token);
+           loggerService.info("query email"+req.query.email +" query token  "+req.query.token);
            if(email == req.query.email && token == req.query.token){
                res.end("<h1>Email "+req.query.email+" is been Successfully verified");
            }

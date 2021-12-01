@@ -11,7 +11,7 @@ module.exports = app => {
     // Create a new Customer
     app.post("/v1/user", users.create);
 
-    app.get('/v1/verifyUserEmail', users.verifyUser);
+    app.get("/v1/verifyUserEmail", users.verifyUser);
   
     app.post("/v1/user/self/pic",checkAuthorization,upload.single('image'),image.uploadUserPic);
 

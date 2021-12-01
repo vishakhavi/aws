@@ -100,7 +100,8 @@ exports.verifyUser = async (req,res) => {
                     loggerService.info("dynamo db error"+err);
                     return res.status(500).send(err);
                }else{
-                    loggerService.info("result==>"+JSON.stringify(result));
+                    try{
+                         loggerService.info("result==>"+JSON.stringify(result));
         
                     loggerService.info("email from dynamodb"+ result.Items[0].username);
                     let email = result.Item.username;
@@ -114,11 +115,18 @@ exports.verifyUser = async (req,res) => {
                         res.send("Token has expired!");
                     }else{
                         if(email == req.query.email && token == req.query.token){
+                         loggerService.info("email and token matches");
                              res.status(200).send("Email "+req.query.email+" is been Successfully verified");
                          }else{
+                              loggerService.info("email and token doesnt match"+err);
                              res.status(400).send("Email "+req.query.email+" or token is invalid");
                          }
                     }
+
+                    }catch(ex){
+                         loggerService.error("error while getting data from db"+ex);
+                    }
+                    
                     
                   }
                 

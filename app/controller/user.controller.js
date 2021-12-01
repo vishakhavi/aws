@@ -98,7 +98,7 @@ exports.verifyUser = async (req, res) => {
                loggerService.info("params==>" + params);
                ddb.get(params, async (error, record) =>{
                     if (error) {
-                         logger.info({
+                         loggerService.info({
                               msg: "Error in DynamoDB get method ",
                               error: error
                          });
@@ -111,20 +111,20 @@ exports.verifyUser = async (req, res) => {
                          let isTokenValid = false;
                          console.log("Checking if record already present in DB!!");
                          if (record.Item == null || record.Item == undefined) {
-                              logger.info({
+                              loggerService.info({
                                    msg: "No record in Dynamo ",
                                    record: record
                               });
                               isTokenValid = false;
                          } else {
                               if (record.Item.ttl < Math.floor(Date.now() / 1000)) {
-                                   logger.info({
+                                   loggerService.info({
                                         msg: "ttl expired ",
                                         record: record
                                    });
                                    isTokenValid = false;
                               } else {
-                                   logger.info({
+                                   loggerService.info({
                                         msg: "ttl found ",
                                         record: record
                                    });

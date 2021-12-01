@@ -95,7 +95,7 @@ exports.verifyUser = async (req,res) => {
                TableName: 'Verify_Email_table'
              };
           loggerService.info("params==>"+params);
-           ddb.get(params,function(err,data){
+           ddb.get(params,function(err,result){
                if(err){
                     loggerService.info("dynamo db error"+err);
                     return res.status(500).send(err);
@@ -103,9 +103,9 @@ exports.verifyUser = async (req,res) => {
                     loggerService.info("result==>"+JSON.stringify(result));
         
                     loggerService.info("email from dynamodb"+ result.Items[0].username);
-                    let email = result.Items[0].username;
-                    let token = result.Items[0].token;
-                    let ttl = result.Items[0].ttl;
+                    let email = result.Item.username;
+                    let token = result.Item.token;
+                    let ttl = result.Item.ttl;
                     let currentTime = Date.now()/1000;
                     loggerService.info("dynamodb"+email +"   "+token);
                     loggerService.info("query email"+req.query.email +" query token  "+req.query.token);
@@ -131,7 +131,7 @@ exports.verifyUser = async (req,res) => {
       }
       else
       {
-          res.status(400).send("Request is from unknown source");
+          res.status(500).send("Request is from unknown source");
       }
 }
 

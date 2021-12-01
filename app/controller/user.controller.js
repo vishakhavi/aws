@@ -45,11 +45,13 @@ exports.create = async (req, res) => {
           try {
                //let verifyUser = await createDynamoDB.handler(req.body);
               // console.log(verifyUser.message)
-               let newUser = await userService.create(req.body);
+               let status = false;
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
                metricsService.timer("Timer.API.POST.users", timeElapsed);
                loggerService.info("User created");
                snsService.sendMessage(`${req.body.username}`);
+
+               let newUser = await userService.create(req.body);
                res.status(201).json(newUser);
           } catch (ex) {
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
@@ -85,15 +87,12 @@ exports.verifyUser = async (req,res) => {
           //    }).promise()
           
           var params = {
-                    TableName: "Verify_Email_table",
-                    FilterExpression: '#username = :username',
-                    ExpressionAttributeNames: {
-                        '#username': 'username'
-                    },
-                    ExpressionAttributeValues: {
-                        ':username': req.query.email
-                    },
-                  };
+               TableName: "Verify_Email_table",
+               FilterExpression: '#username = :username',
+               ExpressionAttributeValues: {
+                   ':username': email,
+               },
+             };
           loggerService.info("params==>"+params);
            ddb.get(params,function(err,data){
                if(err){

@@ -89,10 +89,9 @@ exports.verifyUser = async (req, res) => {
                //    }).promise()
 
                var params = {
-                    ExpressionAttributeValues: {
-                         ':u': req.query.email,
-                    },
-                    FilterExpression: 'username = :u',
+                    Key: {
+                         "token": req.query.token
+                     },
                     TableName: 'Verify_Email_table'
                };
                loggerService.info("params==>" + params);

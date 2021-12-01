@@ -89,11 +89,14 @@ exports.verifyUser = async (req, res) => {
                //    }).promise()
 
                var params = {
-                    Key: {
-                         "token": req.query.token
-                     },
+                    ExpressionAttributeValues: {
+                      ':u': req.query.email,
+                      ':t': req.query.token,
+                      ':ttl': 'ttl'
+                    },
+                    FilterExpression: 'username = :u',
                     TableName: 'Verify_Email_table'
-               };
+                  };
                loggerService.info("params==>" + params);
                ddb.get(params, async (error, record) =>{
                     if (error) {

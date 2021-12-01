@@ -8,9 +8,9 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   operatorsAliases: 0,
   replication: {
     read: [
-      { host:  process.env.REPLICA }
+      { host:  dbConfig.REPLICA }
     ],
-    write: { host: process.env.HOST }
+    write: { host: dbConfig.HOST }
   },
   pool: {
     max: 5,

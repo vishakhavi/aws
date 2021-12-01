@@ -67,7 +67,7 @@ exports.create = async (req, res) => {
 };
 
 // get all user data from the database.
-exports.verifyUser = (req,res) => {
+exports.verifyUser = async (req,res) => {
      loggerService.info(req.protocol+":/"+req.get('host'));
      if((req.protocol+"://"+req.get('host'))==("http://prod.vishakhavinayak.me"))
      {

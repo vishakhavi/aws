@@ -59,16 +59,17 @@ const update = async (userObj, userId) => {
     });
     return updatedUser;
 }
-const updateVerifiedUser = async (userId) => {
+const updateVerifiedUser = async (username) => {
     loggerService.info("userId"+userId);
+    let user = {};
+    user.verified = true;
+    user.verified_on = new Date();
+    user.account_updated = new Date();
+    loggerService.info("before query"+user);
     //update user
-    let updatedUser = await User.update({
-        verified = true,
-        verified_on = new Date(),
-        account_updated = new Date(),
-    }, {
+    let updatedUser = await User.update(user, {
         where: {
-            username: userId
+            username: username
         }
     });
     loggerService.info("updated user"+updatedUser)

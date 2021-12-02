@@ -1,4 +1,5 @@
 const db = require("../models/db");
+const loggerService = require("./logger.service");
 const {
     v4: uuidv4
 } = require("uuid");
@@ -53,7 +54,7 @@ const update = async (userObj, userId) => {
     //update user
     let updatedUser = await User.update(user, {
         where: {
-            id: userId
+            username: userId
         }
     });
     return updatedUser;
@@ -66,9 +67,10 @@ const updateVerifiedUser = async (userId) => {
     //update user
     let updatedUser = await User.update(user, {
         where: {
-            id: userId
+            username: userId
         }
     });
+    loggerService.info("updated user"+updatedUser)
     return updatedUser;
 }
 

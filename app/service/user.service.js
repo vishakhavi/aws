@@ -54,7 +54,7 @@ const update = async (userObj, userId) => {
     //update user
     let updatedUser = await User.update(user, {
         where: {
-            username: userId
+            id: userId
         }
     });
     return updatedUser;
@@ -67,7 +67,7 @@ const updateVerifiedUser = async (userId) => {
     //update user
     let updatedUser = await User.update(user, {
         where: {
-            username: userId
+            id: userId
         }
     });
     loggerService.info("updated user"+updatedUser)

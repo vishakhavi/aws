@@ -7,9 +7,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   force: false,
   operatorsAliases: 0,
   replication: {
-    read: [
-      { host:  dbConfig.REPLICA }
-    ],
+    read: { host:  dbConfig.REPLICA },
     write: { host: dbConfig.HOST }
   },
   pool: {

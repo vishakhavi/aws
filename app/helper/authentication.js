@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const userService = require("../service/user.service");
+const loggerService = require("../service/logger.service");
 // Basic Authorization
 module.exports = basicAuth;
 
@@ -47,7 +48,8 @@ async function basicAuth(req, res, next) {
                             console.log(err)
                             return res.status(401).json({ msg: 'Unauthorized' });
                         } else {
-                            console.log(result);
+                            loggerService.info("is user verified result"+result);
+                            loggerService.info("is user verified"+user.verified);
                             if(user.verified){
                                 const { password, ...userWithoutPassword } = user;
                             res.locals.user = userWithoutPassword;

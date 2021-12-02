@@ -60,7 +60,7 @@ const update = async (userObj, userId) => {
     return updatedUser;
 }
 const updateVerifiedUser = async (username) => {
-    loggerService.info("userId"+userId);
+    loggerService.info("userId"+username);
     let user = {};
     user.verified = true;
     user.verified_on = new Date();

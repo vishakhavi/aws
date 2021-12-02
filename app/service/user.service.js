@@ -58,9 +58,9 @@ const update = async (userObj, userId) => {
     });
     return updatedUser;
 }
-const updateVerifiedUser = async (status, userId) => {
+const updateVerifiedUser = async (userId) => {
     let user = {};
-    user.verified = status;
+    user.verified = true;
     user.verified_on = new Date();
     user.account_updated = new Date();
     //update user

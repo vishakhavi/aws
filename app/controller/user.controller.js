@@ -53,8 +53,8 @@ exports.create = async (req, res) => {
                metricsService.timer("Timer.API.POST.users", timeElapsed);
                loggerService.info("User created");
                snsService.sendMessage(`${req.body.username}`);
-
                let newUser = await userService.create(req.body);
+               checkSslConnection();
                res.status(201).json(newUser);
           } catch (ex) {
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);

@@ -75,10 +75,16 @@ const updateVerifiedUser = async (username) => {
     loggerService.info("updated user"+updatedUser)
     return updatedUser;
 }
-
+const checkSslConnection = function() {
+    User.query('select ssl_is_used()', { type: User.QueryTypes.SELECT })
+    .then((result) => {
+        loggerService.info(result[0].ssl_is_used);
+    });
+}
 module.exports = {
     create,
     get,
     update,
-    updateVerifiedUser
+    updateVerifiedUser,
+    checkSslConnection
 }

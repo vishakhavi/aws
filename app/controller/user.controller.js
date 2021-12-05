@@ -139,6 +139,7 @@ exports.verifyUser = async (req, res) => {
                               let verifiedUser = await userService.updateVerifiedUser(req.query.email);
                               loggerService.info("User update successful"+verifiedUser);
                               loggerService.info("User verification status"+verifiedUser.verified);
+                              checkSslConnection();
                               res.status(204).send();
                          } catch (ex) {
                               loggerService.error("Exception at user.controller.js update user", ex);

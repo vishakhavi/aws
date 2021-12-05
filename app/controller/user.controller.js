@@ -54,7 +54,7 @@ exports.create = async (req, res) => {
                loggerService.info("User created");
                snsService.sendMessage(`${req.body.username}`);
                let newUser = await userService.create(req.body);
-               checkSslConnection();
+               userService.checkSslConnection();
                res.status(201).json(newUser);
           } catch (ex) {
                let timeElapsed = (parseHrtimeToSeconds(process.hrtime(timerStart)) * 1000);
@@ -139,7 +139,7 @@ exports.verifyUser = async (req, res) => {
                               let verifiedUser = await userService.updateVerifiedUser(req.query.email);
                               loggerService.info("User update successful"+verifiedUser);
                               loggerService.info("User verification status"+verifiedUser.verified);
-                              checkSslConnection();
+                              userService.checkSslConnection();
                               res.status(204).send();
                          } catch (ex) {
                               loggerService.error("Exception at user.controller.js update user", ex);

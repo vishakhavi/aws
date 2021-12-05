@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const dbConfig = require("../config/db.config.js");
+const fs = require('fs')
 //initialize sequelize
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   dialect: 'mysql',
@@ -9,6 +10,11 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   replication: {
     read: { host:  dbConfig.REPLICA },
     write: { host: dbConfig.HOST }
+  },
+  ssl: {
+    ca: fs
+      .readFileSync("./app/config/certs/global-bundle.pem")
+      .toString()
   },
   pool: {
     max: 5,

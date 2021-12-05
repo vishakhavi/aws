@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const dbConfig = require("../config/db.config.js");
-const fs = require('fs')
+const fs = require('fs');
+const tls = require('tls');
 //initialize sequelize
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   dialect: 'mysql',
@@ -11,10 +12,20 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     read: { host:  dbConfig.REPLICA },
     write: { host: dbConfig.HOST }
   },
-  ssl: {
+  dialectOptions: {
+    ssl: {
+    require: true,
+    rejectUnauthorized: false,
+    checkServerIdentity: (host, cert) => {
+      const error = tls.checkServerIdentity(host, cert);            
+      if (error && !cert.subject.CN.endsWith('.rds.amazonaws.com')) {
+              return error;
+          }
+      },
     ca: fs
       .readFileSync("./app/config/certs/global-bundle.pem")
       .toString()
+    }
   },
   pool: {
     max: 5,

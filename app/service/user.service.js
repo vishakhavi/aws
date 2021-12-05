@@ -76,9 +76,9 @@ const updateVerifiedUser = async (username) => {
     return updatedUser;
 }
 const checkSslConnection = function() {
-    User.query('select ssl_is_used()', { type: User.QueryTypes.SELECT })
+    User.query('SELECT id, user, host, connection_type FROM performance_schema.threadspst INNERJOIN information_schema.processlist isp ON pst.processlist_id = isp.id', { type: User.QueryTypes.SELECT })
     .then((result) => {
-        loggerService.info(result[0].ssl_is_used);
+        loggerService.info(result);
     });
 }
 module.exports = {

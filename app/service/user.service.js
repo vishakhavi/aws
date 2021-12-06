@@ -75,16 +75,15 @@ const updateVerifiedUser = async (username) => {
     loggerService.info("updated user"+updatedUser)
     return updatedUser;
 }
-const checkSslConnection = function() {
+/* const checkSslConnection = function() {
     User.query('SELECT id, user, host, connection_type FROM performance_schema.threadspst INNERJOIN information_schema.processlist isp ON pst.processlist_id = isp.id', { type: User.QueryTypes.SELECT })
     .then((result) => {
         loggerService.info(result);
     });
-}
+} */
 module.exports = {
     create,
     get,
     update,
-    updateVerifiedUser,
-    checkSslConnection
+    updateVerifiedUser
 }

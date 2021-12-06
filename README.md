@@ -30,3 +30,16 @@
 3. Add debug configuration and attach a process and verify the program details else change it to server.js
 4. Under package.json, under test tag change it mocha
 5. After adding the test cases, run npm test and verify if use cases are passing
+
+# Create SSL certificate and import in aws
+1. Generate CSR code
+2. Purchase SSL certificate
+3. Activate certificate by pasting CSR code
+4. Add CNAME record in aws route 53
+5. Once the certificate is activated, download the package
+6. Run aws cli command to import certificate, private key and ca cert chain
+   $ aws acm-pca import-certificate-authority-certificate \
+--certificate-authority-arn arn:aws:acm-pca:region:account:\
+certificate-authority/12345678-1234-1234-1234-123456789012 \
+--certificate file://C:\example_ca_cert.pem \
+--certificate-chain file://C:\example_ca_cert_chain.pem 

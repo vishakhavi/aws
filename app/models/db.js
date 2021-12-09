@@ -16,12 +16,6 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     ssl: {
     require: true,
     rejectUnauthorized: false,
-    checkServerIdentity: (host, cert) => {
-      const error = tls.checkServerIdentity(host, cert);            
-      if (error && !cert.subject.CN.endsWith('.rds.amazonaws.com')) {
-              return error;
-          }
-      },
     ca: fs
       .readFileSync("./app/config/certs/global-bundle.pem")
       .toString()

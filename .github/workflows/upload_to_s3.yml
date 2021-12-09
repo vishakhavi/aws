@@ -2,7 +2,7 @@ name: Upload to s3
 env:
   ARTIFACT_NAME: csye6255-webapp-${{ github.sha }}.zip
   CODEDEPLOY_APP_NAME: csye6255_webapp
-  CODEDEPLOY_APP_DEPLOY_GROUP_NAME: csye6225_webapp_deployment
+  CODEDEPLOY_APP_DEPLOY_GROUP_NAME: csye6225_webapp_deploy_group
   AWS_REGION: us-east-1
 on:
   push:
